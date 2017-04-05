@@ -43,14 +43,15 @@ namespace SonarWatcher
         private ChartArea InitializeChartArea()
         {
             var chartArea = new ChartArea();
-            chartArea.AxisX.LabelStyle.Format = "dd/MM/yyyy";
             chartArea.AxisX.Title = "Data da Medição";
             chartArea.AxisX.MajorGrid.LineColor = Color.LightGray;
+            chartArea.AxisX.LabelAutoFitStyle = LabelAutoFitStyles.LabelsAngleStep30;
+            chartArea.AxisX.IsLabelAutoFit = true;
+            chartArea.AxisX.Interval = 1;
             chartArea.AxisY.Title = "Valor";
             chartArea.AxisY.MajorGrid.LineColor = Color.LightGray;
             return chartArea;
         }
-
 
         private Series ConvertMetricToDataPoints(MetricSequence metricSequence)
         {
@@ -58,7 +59,7 @@ namespace SonarWatcher
 
             foreach (var measure in metricSequence.GetMeasures())
             {
-                serie.Points.AddXY(measure.Date, measure.Value);
+                serie.Points.AddXY(measure.Date.ToShortDateString(), measure.Value);
             }
 
             return serie;
@@ -69,7 +70,6 @@ namespace SonarWatcher
             var serie = new Series();
             serie.Name = serieName;
             serie.ChartType = SeriesChartType.Column;
-            serie.XValueType = ChartValueType.DateTime;
             serie.IsValueShownAsLabel = true;
             return serie;
         }

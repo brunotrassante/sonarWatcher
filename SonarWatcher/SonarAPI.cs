@@ -43,7 +43,6 @@ namespace SonarWatcher
         private List<MetricSequence> FormatMetrics(SonarMetricsJson projectMetrics)
         {
             List<MetricSequence> metrics = InitializeMetricsList(projectMetrics.cols);
-            // TODO: Revomer excesso de dados
 
             foreach (var projectMeasureInCertainDay in projectMetrics.cells)
             {

@@ -9,8 +9,8 @@ namespace SonarWatcher
         {
             var sonarAPI = new SonarAPI();
             sonarAPI.GenerateMetricsChartForAllProjects();
+            Console.WriteLine("Done!");
             Console.ReadLine();
-
         }
     }
 }
