@@ -27,13 +27,36 @@ namespace SonarWatcher
             {
                 foreach (var project in sonarProjects.Result)
                 {
-                    var projectMetricsTask = GetProjectMetricsAsync(project.k);
-                    projectMetricsTask.ContinueWith((projectMetrics) =>
+                    //TODO: Refatorar a cópia tripla
+                    var issuesProjectMetricsTask = GetProjectThreeIsuesMetricsAsync(project.k);
+                    issuesProjectMetricsTask.ContinueWith((projectMetrics) =>
                     {
                         if (projectMetrics.Exception == null && projectMetrics.Result != null)
                         {
-                            var formatedMetrics = this.FormatMetrics(projectMetricsTask.Result.First());
-                            chart.CreateCharts(formatedMetrics, project.nm);
+                            var formatedMetrics = this.FormatMetrics(issuesProjectMetricsTask.Result.First());
+                            chart.CreateChartsGrouped(formatedMetrics, project.nm, "Ocorrências por Tipo");
+                        }
+                    });
+
+
+                    var severityProjectMetricsTask = GetSeverityProjectMetricsAsync(project.k);
+                    severityProjectMetricsTask.ContinueWith((projectMetrics) =>
+                    {
+                        if (projectMetrics.Exception == null && projectMetrics.Result != null)
+                        {
+                            var formatedMetrics = this.FormatMetrics(severityProjectMetricsTask.Result.First());
+                            chart.CreateChartsGrouped(formatedMetrics, project.nm, "Ocorrências por Severidade");
+                        }
+                    });
+
+
+                    var complexityProjectMetricsTask = GetComplexityAndLineNumberProjectMetricsAsync(project.k);
+                    complexityProjectMetricsTask.ContinueWith((projectMetrics) =>
+                    {
+                        if (projectMetrics.Exception == null && projectMetrics.Result != null)
+                        {
+                            var formatedMetrics = this.FormatMetrics(complexityProjectMetricsTask.Result.First());
+                            chart.CreateChartsGrouped(formatedMetrics, project.nm, "Número de linhas x Complexidade ");
                         }
                     });
                 }
@@ -82,10 +105,30 @@ namespace SonarWatcher
             return serviceClient;
         }
 
-        private async Task<List<SonarMetricsJson>> GetProjectMetricsAsync(string projectKey)
+        private async Task<List<SonarMetricsJson>> GetAllProjectMetricsAsync(string projectKey)
+        {
+            return await GetProjectMetricsAsync(projectKey, "metricsApiTemplateURL");
+        }
+
+        private async Task<List<SonarMetricsJson>> GetProjectThreeIsuesMetricsAsync(string projectKey)
+        {
+            return await GetProjectMetricsAsync(projectKey, "threeIsuesMetricsApiTemplateURL");
+        }
+
+        private async Task<List<SonarMetricsJson>> GetSeverityProjectMetricsAsync(string projectKey)
+        {
+            return await GetProjectMetricsAsync(projectKey, "severityMetricsApiTemplateURL");
+        }
+
+        private async Task<List<SonarMetricsJson>> GetComplexityAndLineNumberProjectMetricsAsync(string projectKey)
+        {
+            return await GetProjectMetricsAsync(projectKey, "complexityAndLineNumberMetricsApiTemplateURL");
+        }
+
+        private async Task<List<SonarMetricsJson>> GetProjectMetricsAsync(string projectKey, string apiAppSettingKey)
         {
             List<SonarMetricsJson> sonarMetrics = null;
-            string apiURLWithProjectParameter = string.Format(ConfigurationManager.AppSettings["metricsApiTemplateURL"], projectKey);
+            string apiURLWithProjectParameter = string.Format(ConfigurationManager.AppSettings[apiAppSettingKey], projectKey);
 
             using (var serviceClient = this.ConfigureClient())
             {
