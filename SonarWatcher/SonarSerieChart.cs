@@ -31,25 +31,38 @@ namespace SonarWatcher
             }
         }
 
-        public void CreateChartsGrouped(List<MetricSequence> formatedMetrics, string projectName, string chartName)
+        public string CreateChartsGrouped(List<MetricSequence> formatedMetrics, string projectName, string chartName)
         {
-            CreateCharts(ConvertMetricToSeries(formatedMetrics), projectName, chartName);
+            return CreateCharts(ConvertMetricToSeries(formatedMetrics), projectName, chartName);
         }
 
-        private void CreateCharts(List<Series> series, string projectName, string chartName)
+        private string CreateCharts(List<Series> series, string projectName, string chartName)
         {
             ChartArea chartArea = InitializeChartArea();
             Chart chart = InitializeChart(chartName: (string.Format("{0} - {1}", projectName, chartName)));
-            string chartsDirectoryPath = ConfigurationManager.AppSettings["chartsDirectoryPath"];
-            
+            string chartsDirectoryPath = GetOrCreateDirectoryForProjectChatrs(projectName);
+
             chart.ChartAreas.Add(chartArea);
 
             foreach (var serie in series)
             {
                 chart.Series.Add(serie);
             }
+            string chartFullPath = Path.Combine(chartsDirectoryPath, CreateChartName(projectName, chartName));
+            chart.SaveImage(chartFullPath, ChartImageFormat.Jpeg);
 
-            chart.SaveImage(Path.Combine(chartsDirectoryPath, CreateChartName(projectName, chartName)), ChartImageFormat.Png);
+            return chartFullPath;
+        }
+
+        private string GetOrCreateDirectoryForProjectChatrs(string projectName)
+        {
+            projectName = projectName.Replace("/", string.Empty).Replace("*", string.Empty);
+
+            string chartsDirectoryPath = Path.Combine(ConfigurationManager.AppSettings["chartsDirectoryPath"], projectName);
+
+            if (!Directory.Exists(chartsDirectoryPath))
+                Directory.CreateDirectory(chartsDirectoryPath);
+            return chartsDirectoryPath;
         }
 
         private Chart InitializeChart(string chartName)
@@ -72,7 +85,7 @@ namespace SonarWatcher
             chartArea.AxisX.Interval = 1;
             chartArea.AxisY.Title = "Valor";
             chartArea.AxisY.MajorGrid.LineColor = Color.LightGray;
-             return chartArea;
+            return chartArea;
         }
 
         private List<Series> ConvertMetricToSeries(MetricSequence metricSequence)
@@ -126,7 +139,7 @@ namespace SonarWatcher
         private string CreateChartName(string projectName, string metricName)
         {
             projectName = projectName.Replace("/", string.Empty).Replace("*", string.Empty);
-            return new StringBuilder("Sonar-").Append(projectName).Append('-').Append(metricName).Append('-').Append(DateTime.Now.ToString("ddMMyyyy-HHmmss")).Append(".png").ToString();
+            return new StringBuilder(projectName).Append('-').Append(metricName).Append('-').Append(DateTime.Now.ToString("ddMMyyyy-HHmmss")).Append(".jpg").ToString();
         }
     }
 }

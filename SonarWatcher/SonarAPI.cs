@@ -3,6 +3,8 @@ using SonarWatcher.Entity;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,52 +17,6 @@ namespace SonarWatcher
         public SonarAPI()
         {
             ConfigureClient();
-        }
-
-        public void GenerateMetricsChartForAllProjects()
-        {
-            var sonarProjects = GetAllProjects();
-            var chart = new SonarSerieChart();
-
-            sonarProjects.Wait();
-            if (sonarProjects.Exception == null && sonarProjects.Result != null)
-            {
-                foreach (var project in sonarProjects.Result)
-                {
-                    //TODO: Refatorar a cópia tripla
-                    var issuesProjectMetricsTask = GetProjectThreeIsuesMetricsAsync(project.k);
-                    issuesProjectMetricsTask.ContinueWith((projectMetrics) =>
-                    {
-                        if (projectMetrics.Exception == null && projectMetrics.Result != null)
-                        {
-                            var formatedMetrics = this.FormatMetrics(issuesProjectMetricsTask.Result.First());
-                            chart.CreateChartsGrouped(formatedMetrics, project.nm, "Ocorrências por Tipo");
-                        }
-                    });
-
-
-                    var severityProjectMetricsTask = GetSeverityProjectMetricsAsync(project.k);
-                    severityProjectMetricsTask.ContinueWith((projectMetrics) =>
-                    {
-                        if (projectMetrics.Exception == null && projectMetrics.Result != null)
-                        {
-                            var formatedMetrics = this.FormatMetrics(severityProjectMetricsTask.Result.First());
-                            chart.CreateChartsGrouped(formatedMetrics, project.nm, "Ocorrências por Severidade");
-                        }
-                    });
-
-
-                    var complexityProjectMetricsTask = GetComplexityAndLineNumberProjectMetricsAsync(project.k);
-                    complexityProjectMetricsTask.ContinueWith((projectMetrics) =>
-                    {
-                        if (projectMetrics.Exception == null && projectMetrics.Result != null)
-                        {
-                            var formatedMetrics = this.FormatMetrics(complexityProjectMetricsTask.Result.First());
-                            chart.CreateChartsGrouped(formatedMetrics, project.nm, "Número de linhas x Complexidade ");
-                        }
-                    });
-                }
-            }
         }
 
         private List<MetricSequence> FormatMetrics(SonarMetricsJson projectMetrics)
@@ -78,13 +34,13 @@ namespace SonarWatcher
             return metrics;
         }
 
-        private List<MetricSequence> InitializeMetricsList(List<Col> cols)
+        private List<MetricSequence> InitializeMetricsList(List<Col> colunas)
         {
             var metrics = new List<MetricSequence>();
 
-            foreach (var col in cols)
+            foreach (var coluna in colunas)
             {
-                metrics.Add(new MetricSequence(col.metric));
+                metrics.Add(new MetricSequence(coluna.metric));
             }
 
             return metrics;
@@ -105,24 +61,38 @@ namespace SonarWatcher
             return serviceClient;
         }
 
-        private async Task<List<SonarMetricsJson>> GetAllProjectMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetAllProjectMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsAsync(projectKey, "metricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "metricsApiTemplateURL");
         }
 
-        private async Task<List<SonarMetricsJson>> GetProjectThreeIsuesMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetProjectThreeIsuesMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsAsync(projectKey, "threeIsuesMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "threeIsuesMetricsApiTemplateURL");
         }
 
-        private async Task<List<SonarMetricsJson>> GetSeverityProjectMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetSeverityProjectMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsAsync(projectKey, "severityMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "severityMetricsApiTemplateURL");
         }
 
-        private async Task<List<SonarMetricsJson>> GetComplexityAndLineNumberProjectMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetComplexityAndLineNumberProjectMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsAsync(projectKey, "complexityAndLineNumberMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "complexityAndLineNumberMetricsApiTemplateURL");
+        }
+
+        private async Task<List<MetricSequence>> GetProjectMetricsFormatedAsync(string projectKey, string valor)
+        {
+            List<MetricSequence> metrics = null;
+            var issuesProjectMetricsTask = GetProjectMetricsAsync(projectKey, valor);
+            await issuesProjectMetricsTask.ContinueWith((projectMetrics) =>
+            {
+                if (projectMetrics.Exception == null && projectMetrics.Result != null)
+                {
+                    metrics = FormatMetrics(issuesProjectMetricsTask.Result.First());
+                }
+            });
+            return metrics;
         }
 
         private async Task<List<SonarMetricsJson>> GetProjectMetricsAsync(string projectKey, string apiAppSettingKey)
@@ -143,7 +113,7 @@ namespace SonarWatcher
             return sonarMetrics;
         }
 
-        private async Task<List<SonarProjectJsons>> GetAllProjects()
+        public async Task<List<SonarProjectJsons>> GetAllProjects()
         {
             List<SonarProjectJsons> sonarProjects = null;
 
@@ -158,6 +128,54 @@ namespace SonarWatcher
             }
 
             return sonarProjects;
+        }
+
+        public async Task<ProjectRating> GetProjectRatings(string projectKey)
+        {
+            ProjectRating projectRatings = null;
+
+            string apiURLWithProjectParameter = string.Format(ConfigurationManager.AppSettings["ratingsApiTemplateURL"], projectKey);
+
+            using (var serviceClient = this.ConfigureClient())
+            {
+                HttpResponseMessage response = await serviceClient.GetAsync(apiURLWithProjectParameter);
+                if (response.IsSuccessStatusCode)
+                {
+                    var stringResult = await response.Content.ReadAsStringAsync();
+                    var projectRatingsJson = JsonConvert.DeserializeObject<SonarRatingJson>(stringResult);
+
+                    projectRatings = CreateProjectRatingPopulated(projectRatingsJson);
+                }
+            }
+
+            return projectRatings;
+        }
+
+        private static ProjectRating CreateProjectRatingPopulated(SonarRatingJson projectRatingsJson)
+        {
+            ushort reabilityRating = 0;
+            ushort securityRating = 0;
+            ushort manutenibilityRating = 0;
+
+            foreach (var measure in projectRatingsJson.component.measures)
+            {
+                switch (measure.metric)
+                {
+                    case "security_rating":
+                        securityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        break;
+                    case "sqale_rating":
+                        manutenibilityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        break;
+                    case "reliability_rating":
+                        reabilityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return new ProjectRating(reabilityRating, securityRating, manutenibilityRating);
         }
     }
 }
