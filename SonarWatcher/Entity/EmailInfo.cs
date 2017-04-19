@@ -17,22 +17,30 @@ namespace SonarWatcher.Entity
         public string ComplexityChartPath { get; set; }
         public string TypeChartPath { get; set; }
         public string SeverityChartPath { get; set; }
-        public string MailTo { get; private set; }
+        public List<string> DestinataryMails { get; private set; }
         public ProjectRating ProjectRating { get; private set; }
+        public string CompanyLogoPath { get; set; }
+        public string SonarLogoPath { get; set; }
 
-
-        public EmailInfo(string project, string projectKey, string manager, string leader, string mailTo, string complexityChartPath, string typeChartPath, string severityChartPath, ProjectRating projectRating)
+        public EmailInfo(string project, string projectKey, string manager, string leader, IEnumerable<string> destinataryMails, string complexityChartPath, string typeChartPath, string severityChartPath, ProjectRating projectRating)
         {
             this.Project = project;
             this.ProjectKey = projectKey;
             this.Manager = manager;
             this.Leader = leader;
-            this.MailTo = mailTo;
+            this.DestinataryMails = destinataryMails.ToList();
             string defaultErrorImagePath = ConfigurationManager.AppSettings["defaultErrorImage"];
-            this.ComplexityChartPath = complexityChartPath;
-            this.TypeChartPath = typeChartPath;
-            this.SeverityChartPath = severityChartPath;
+            this.ComplexityChartPath = complexityChartPath ?? defaultErrorImagePath;
+            this.TypeChartPath = typeChartPath ?? defaultErrorImagePath;
+            this.SeverityChartPath = severityChartPath ?? defaultErrorImagePath;
             this.ProjectRating = projectRating;
+            this.CompanyLogoPath = ConfigurationManager.AppSettings["companyLogo"];
+            this.SonarLogoPath = ConfigurationManager.AppSettings["sonarLogo"];
+        }
+
+        public void AddDestinataryMail(string email)
+        {
+            this.DestinataryMails.Add(email);
         }
     }
 }

@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarWatcher", "SonarWatcher\SonarWatcher.csproj", "{A4A9EF08-839D-4ED6-814E-B32EEA561FB2}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SonarWatcher.Database", "SonarWatcher.Database\SonarWatcher.Database.sqlproj", "{F9BEF1CC-7093-404B-9D66-E84D523E56A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarWatcher.Repository", "SonarWatcher.Repository\SonarWatcher.Repository.csproj", "{4DEC8863-DA0F-415D-8D32-8C5EC0E77F91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,16 @@ Global
 		{A4A9EF08-839D-4ED6-814E-B32EEA561FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A9EF08-839D-4ED6-814E-B32EEA561FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A9EF08-839D-4ED6-814E-B32EEA561FB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9BEF1CC-7093-404B-9D66-E84D523E56A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9BEF1CC-7093-404B-9D66-E84D523E56A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9BEF1CC-7093-404B-9D66-E84D523E56A4}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F9BEF1CC-7093-404B-9D66-E84D523E56A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9BEF1CC-7093-404B-9D66-E84D523E56A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9BEF1CC-7093-404B-9D66-E84D523E56A4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4DEC8863-DA0F-415D-8D32-8C5EC0E77F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DEC8863-DA0F-415D-8D32-8C5EC0E77F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DEC8863-DA0F-415D-8D32-8C5EC0E77F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DEC8863-DA0F-415D-8D32-8C5EC0E77F91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

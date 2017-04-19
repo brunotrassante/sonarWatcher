@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="b73efd02-f373-49b1-b476-8d2e1f78834b" ChangeDateTime="04/18/2017 14:29:46">
+    <Property Name="ElementName" Value="[dbo].[Project].[IX_Project_Column]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Project]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Project_SonarKey]" />
+  </Operation>
+</Operations>

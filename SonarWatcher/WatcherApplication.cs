@@ -1,4 +1,5 @@
 ﻿using SonarWatcher.Entity;
+using SonarWatcher.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace SonarWatcher
     {
         public void SendMetricMailsToProjectHeads()
         {
+            var personRepository = new PersonRepository();
             var sonarAPI = new SonarAPI();
             var sonarProjects = sonarAPI.GetAllProjects();
             var chart = new SonarSerieChart();
@@ -28,14 +30,20 @@ namespace SonarWatcher
                     Task.WhenAll(issuesMetricsTask, severityProjectMetricsTask, complexityProjectMetricsTask, ratingTask).ContinueWith(
                         tasksResults =>
                         {
-                            var typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.nm, "Ocorrências por Tipo");
-                            var severityChartPath = chart.CreateChartsGrouped(severityProjectMetricsTask.Result, project.nm, "Ocorrências por Severidade");
-                            var complexityChartPath = chart.CreateChartsGrouped(complexityProjectMetricsTask.Result, project.nm, "Número de linhas x Complexidade");
-                            var rating = ratingTask.Result;
-                            EmailInfo email = new EmailInfo(project.nm, project.k, "André Hoffmann", "John Voloski", "bruno@cwi.com.br", complexityChartPath, typeChartPath, severityChartPath, rating);
+                            //TODO: Tratamento de erros
+                            string typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.nm, "Ocorrências por Tipo");
+                            string severityChartPath = chart.CreateChartsGrouped(severityProjectMetricsTask.Result, project.nm, "Ocorrências por Severidade");
+                            string complexityChartPath = chart.CreateChartsGrouped(complexityProjectMetricsTask.Result, project.nm, "Número de linhas x Complexidade");
+                            ProjectRating rating = ratingTask.Result;
 
-                            var emailService = new EmailService();
-                            emailService.SendEmail(email);
+                            var projectMembers = personRepository.FindAllByProjectKey(project.k);
+                            string managerName = projectMembers.SingleOrDefault(m => m.Role == RoleEnum.Manager)?.Name ?? "Não cadastrado";
+                            string headName = projectMembers.SingleOrDefault(m => m.Role == RoleEnum.Head)?.Name ?? "Não cadastrado";
+                            IEnumerable<string> projecMemberEmails = projectMembers.Select(m => m.Email);
+                            EmailInfo email = new EmailInfo(project.nm, project.k, managerName, headName, projecMemberEmails, complexityChartPath, typeChartPath, severityChartPath, rating);
+
+                            var emailService = new EmailService(email);
+                            emailService.SendEmail();
                         });
                 }
             }
