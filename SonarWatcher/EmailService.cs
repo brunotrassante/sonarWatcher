@@ -12,9 +12,9 @@ namespace SonarWatcher
 {
     public class EmailService
     {
-        private Dictionary<string, LinkedResource> resourcesDictionary;
-        MailMessage mail;
-        EmailInfo emailInfo;
+        private readonly Dictionary<string, LinkedResource> resourcesDictionary;
+        private readonly MailMessage mail;
+        private readonly EmailInfo emailInfo;
 
         public EmailService(EmailInfo emailInfo)
         {

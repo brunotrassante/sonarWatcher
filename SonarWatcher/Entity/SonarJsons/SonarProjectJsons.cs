@@ -1,8 +1,8 @@
 ﻿public class SonarProjectJsons
 {
-    public string id { get; set; }
-    public string k { get; set; }
-    public string nm { get; set; }
-    public string sc { get; set; }
-    public string qu { get; set; }
+    public string Id { get; set; }
+    public string K { get; set; }
+    public string Nm { get; set; }
+    public string Sc { get; set; }
+    public string Qu { get; set; }
 }

@@ -22,25 +22,24 @@ namespace SonarWatcher
             {
                 foreach (var project in sonarProjects.Result)
                 {
-                    var issuesMetricsTask = sonarAPI.GetProjectThreeIsuesMetricsAsync(project.k);
-                    var severityProjectMetricsTask = sonarAPI.GetSeverityProjectMetricsAsync(project.k);
-                    var complexityProjectMetricsTask = sonarAPI.GetComplexityAndLineNumberProjectMetricsAsync(project.k);
-                    var ratingTask = sonarAPI.GetProjectRatings(project.k);
+                    var issuesMetricsTask = sonarAPI.GetProjectThreeIsuesMetricsAsync(project.K);
+                    var severityProjectMetricsTask = sonarAPI.GetSeverityProjectMetricsAsync(project.K);
+                    var complexityProjectMetricsTask = sonarAPI.GetComplexityAndLineNumberProjectMetricsAsync(project.K);
+                    var ratingTask = sonarAPI.GetProjectRatings(project.K);
 
                     Task.WhenAll(issuesMetricsTask, severityProjectMetricsTask, complexityProjectMetricsTask, ratingTask).ContinueWith(
                         tasksResults =>
                         {
-                            //TODO: Tratamento de erros
-                            string typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.nm, "Ocorrências por Tipo");
-                            string severityChartPath = chart.CreateChartsGrouped(severityProjectMetricsTask.Result, project.nm, "Ocorrências por Severidade");
-                            string complexityChartPath = chart.CreateChartsGrouped(complexityProjectMetricsTask.Result, project.nm, "Número de linhas x Complexidade");
+                            string typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.Nm, "Ocorrências por Tipo");
+                            string severityChartPath = chart.CreateChartsGrouped(severityProjectMetricsTask.Result, project.Nm, "Ocorrências por Severidade");
+                            string complexityChartPath = chart.CreateChartsGrouped(complexityProjectMetricsTask.Result, project.Nm, "Número de linhas x Complexidade");
+                            IEnumerable<Person> projectMembers = personRepository.FindAllByProjectKey(project.K);
+                            string managerName = projectMembers.SingleOrDefault(m => m.Role == Role.Manager)?.Name ?? "Não cadastrado";
+                            string headName = projectMembers.SingleOrDefault(m => m.Role == Role.Head)?.Name ?? "Não cadastrado";
                             ProjectRating rating = ratingTask.Result;
 
-                            var projectMembers = personRepository.FindAllByProjectKey(project.k);
-                            string managerName = projectMembers.SingleOrDefault(m => m.Role == RoleEnum.Manager)?.Name ?? "Não cadastrado";
-                            string headName = projectMembers.SingleOrDefault(m => m.Role == RoleEnum.Head)?.Name ?? "Não cadastrado";
                             IEnumerable<string> projecMemberEmails = projectMembers.Select(m => m.Email);
-                            EmailInfo email = new EmailInfo(project.nm, project.k, managerName, headName, projecMemberEmails, complexityChartPath, typeChartPath, severityChartPath, rating);
+                            EmailInfo email = new EmailInfo(project.Nm, project.K, managerName, headName, projecMemberEmails, complexityChartPath, typeChartPath, severityChartPath, rating);
 
                             var emailService = new EmailService(email);
                             emailService.SendEmail();

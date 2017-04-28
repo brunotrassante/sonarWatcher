@@ -3,27 +3,27 @@ using System.Collections.Generic;
 
 public class Period
 {
-    public int index { get; set; }
-    public string value { get; set; }
+    public int Index { get; set; }
+    public string Value { get; set; }
 }
 
 public class Measure
 {
-    public string metric { get; set; }
-    public string value { get; set; }
-    public List<Period> periods { get; set; }
+    public string Metric { get; set; }
+    public string Value { get; set; }
+    public List<Period> Periods { get; set; }
 }
 
 public class Component
 {
-    public string id { get; set; }
-    public string key { get; set; }
-    public string name { get; set; }
-    public string qualifier { get; set; }
-    public List<Measure> measures { get; set; }
+    public string Dd { get; set; }
+    public string Key { get; set; }
+    public string Name { get; set; }
+    public string Qualifier { get; set; }
+    public List<Measure> Measures { get; set; }
 }
 
 public class SonarRatingJson
 {
-    public Component component { get; set; }
+    public Component Component { get; set; }
 }

@@ -10,11 +10,11 @@
         {
             this.Name = name;
             this.Email = email;
-            this.Role = (RoleEnum)role;
+            this.Role = (Role)role;
         }
 
         public string Name { get; private set; }
         public string Email { get; private set; }
-        public RoleEnum Role { get; private set; }
+        public Role Role { get; private set; }
     }
 }
