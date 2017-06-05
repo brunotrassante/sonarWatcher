@@ -22,5 +22,21 @@ namespace SonarWatcher.Repository
                 return conn.Query<Person>(sql, new { SonarKey = sonarKey });
             }
         }
+
+        public IEnumerable<Person> FindAllByProjectId(int id)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["sonarWatcherConnection"].ConnectionString;
+            var sql = @"SELECT [Person].Id, [Person].Name, [Person].Email,[ProjectPersonRole].RoleId as Role
+                        FROM [Person] 
+                        Join [ProjectPersonRole] ON [ProjectPersonRole].PersonId = [Person].Id
+                        Join [Project] on [Project].Id = [ProjectPersonRole].ProjectId
+                        WHERE[Project].Id = @Id";
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                return conn.Query<Person>(sql, new { Id = id });
+            }
+        }
     }
 }

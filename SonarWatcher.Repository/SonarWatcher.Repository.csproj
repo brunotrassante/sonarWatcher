@@ -50,6 +50,7 @@
     <Compile Include="Entities\Person.cs" />
     <Compile Include="Entities\Project.cs" />
     <Compile Include="Entities\Role.cs" />
+    <Compile Include="ProjectRepository.cs" />
     <Compile Include="PersonRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -38,6 +38,16 @@ namespace SonarWatcher.Entity
             this.SonarLogoPath = ConfigurationManager.AppSettings["sonarLogo"];
         }
 
+        public EmailInfo(string project, string manager, string leader, IEnumerable<string> destinataryMails)
+        {
+            this.Project = project;
+            this.Manager = manager;
+            this.Leader = leader;
+            this.DestinataryMails = destinataryMails.ToList();
+            this.CompanyLogoPath = ConfigurationManager.AppSettings["companyLogo"];
+            this.SonarLogoPath = ConfigurationManager.AppSettings["sonarLogo"];
+        }
+
         public void AddDestinataryMail(string email)
         {
             this.DestinataryMails.Add(email);

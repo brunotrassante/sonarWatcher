@@ -1,18 +1,40 @@
 ﻿using SonarWatcher.Entity;
 using System;
-
+using System.IO;
+using System.Reflection;
 
 namespace SonarWatcher
 {
     class Program
     {
         static void Main(string[] args)
-        {        
-            var watcherApplication = new WatcherApplication();
-            watcherApplication.SendMetricMailsToProjectHeads();
+        {
+            WriteInLog("Iniciado em " + DateTime.Now.ToString());
 
-            Console.WriteLine("Done!");
-            Console.ReadLine();
+            try
+            {
+                var watcherApplication = new WatcherApplication();
+                watcherApplication.SendMetricMailsToProjectHeads();
+                watcherApplication.SendNoRegistryMailsForProjectHeads();
+                WriteInLog("Sucesso");
+            }
+            catch (Exception ex)
+            {
+                WriteInLog(ex.ToString());
+            }
+            finally
+            {
+                WriteInLog("Encerrado em " + DateTime.Now.ToString());
+                WriteInLog("-------------------------------");
+            }
+        }
+
+        static void WriteInLog(string message)
+        {
+            using (StreamWriter sw = File.AppendText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "log.txt")))
+            {
+                sw.WriteLine(message);
+            }
         }
     }
 }
