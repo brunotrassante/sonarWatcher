@@ -25,7 +25,7 @@ namespace SonarWatcher
 
             foreach (var projectMeasureInCertainDay in projectMetrics.Cells)
             {
-                for (int i = 0; i < projectMeasureInCertainDay.V.Count(); i++)
+                for (int i = 0; i < projectMeasureInCertainDay.V.Count; i++)
                 {
                     metrics[i].AddMeasure(new DateValue(projectMeasureInCertainDay.D, projectMeasureInCertainDay.V[i]));
                 }

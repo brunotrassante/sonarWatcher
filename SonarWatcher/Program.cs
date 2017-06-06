@@ -1,15 +1,16 @@
 ﻿using SonarWatcher.Entity;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
 namespace SonarWatcher
 {
-    class Program
+    static class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            WriteInLog("Iniciado em " + DateTime.Now.ToString());
+            WriteInLog("Iniciado em " + DateTime.Now.ToString(CultureInfo.GetCultureInfo("pt-BR")));
 
             try
             {
@@ -24,7 +25,7 @@ namespace SonarWatcher
             }
             finally
             {
-                WriteInLog("Encerrado em " + DateTime.Now.ToString());
+                WriteInLog("Encerrado em " + DateTime.Now.ToString(CultureInfo.GetCultureInfo("pt-BR")));
                 WriteInLog("-------------------------------");
             }
         }
