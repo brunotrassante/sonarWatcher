@@ -30,13 +30,13 @@ namespace SonarWatcher
 
         private List<MetricSequence> FormatMetrics(SonarMetricsJson projectMetrics)
         {
-            List<MetricSequence> metrics = InitializeMetricsList(projectMetrics.cols);
+            List<MetricSequence> metrics = InitializeMetricsList(projectMetrics.Cols);
 
-            foreach (var projectMeasureInCertainDay in projectMetrics.cells)
+            foreach (var projectMeasureInCertainDay in projectMetrics.Cells)
             {
-                for (int i = 0; i < projectMeasureInCertainDay.v.Count(); i++)
+                for (int i = 0; i < projectMeasureInCertainDay.V.Count; i++)
                 {
-                    metrics[i].AddMeasure(new DateValue(projectMeasureInCertainDay.d, projectMeasureInCertainDay.v[i]));
+                    metrics[i].AddMeasure(new DateValue(projectMeasureInCertainDay.D, projectMeasureInCertainDay.V[i]));
                 }
             }
 
@@ -49,7 +49,7 @@ namespace SonarWatcher
 
             foreach (var coluna in colunas)
             {
-                metrics.Add(new MetricSequence(coluna.metric));
+                metrics.Add(new MetricSequence(coluna.Metric));
             }
 
             return metrics;
@@ -167,18 +167,18 @@ namespace SonarWatcher
             ushort securityRating = 0;
             ushort manutenibilityRating = 0;
 
-            foreach (var measure in projectRatingsJson.component.measures)
+            foreach (var measure in projectRatingsJson.Component.Measures)
             {
-                switch (measure.metric)
+                switch (measure.Metric)
                 {
                     case "security_rating":
-                        securityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        securityRating = (ushort)decimal.Parse(measure.Value, CultureInfo.InvariantCulture);
                         break;
                     case "sqale_rating":
-                        manutenibilityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        manutenibilityRating = (ushort)decimal.Parse(measure.Value, CultureInfo.InvariantCulture);
                         break;
                     case "reliability_rating":
-                        reabilityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        reabilityRating = (ushort)decimal.Parse(measure.Value, CultureInfo.InvariantCulture);
                         break;
                     default:
                         break;

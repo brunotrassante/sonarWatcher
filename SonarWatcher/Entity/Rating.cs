@@ -11,21 +11,21 @@ namespace SonarWatcher.Entity
         const string Bad = "#EC644B";
         const string Awful = "#D91E18";
 
-        private ushort value { get; set; }
+        private ushort Value { get; set; }
 
         public Rating(ushort value)
         {
-            this.value = value;
+            this.Value = value;
         }
 
         public ushort ToUshort()
         {
-            return this.value;
+            return this.Value;
         }
 
         public Color ToColor()
         {
-            switch (this.value)
+            switch (this.Value)
             {
                 case 1:
                     return ColorTranslator.FromHtml(Excelent);
@@ -44,7 +44,7 @@ namespace SonarWatcher.Entity
 
         public string ToClassification()
         {
-            switch (this.value)
+            switch (this.Value)
             {
                 case 1:
                     return "A";
@@ -63,7 +63,7 @@ namespace SonarWatcher.Entity
 
         public string ToColorHexa()
         {
-            switch (this.value)
+            switch (this.Value)
             {
                 case 1:
                     return Excelent;

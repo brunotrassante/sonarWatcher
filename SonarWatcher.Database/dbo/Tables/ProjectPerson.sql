@@ -1,8 +1,4 @@
-﻿CREATE TABLE [dbo].[ProjectPerson] (
-    [ProjectId] INT NOT NULL,
-    [PersonId]  INT NOT NULL,
-    [RoleId]    INT NOT NULL
-);
+﻿
 
 
 

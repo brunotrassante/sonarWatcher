@@ -101,7 +101,7 @@ namespace SonarWatcher
 
             if (badCode || noChangeOnLastWeeks)
             {
-
+                this.AddDefaultDestinatary();
             }
 
             html = html.Replace("{{projectInactivityWarning}}", noChangeOnLastWeeks ? "display: normal;" : "display: none;");
