@@ -1,6 +1,5 @@
 ﻿using SonarWatcher.Entity;
 using SonarWatcher.Repository;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +51,7 @@ namespace SonarWatcher
                                 EmailInfo email = new EmailInfo(project.Name, project.Key, managerName, headName, projecMemberEmails, complexityChartPath, typeChartPath, severityChartPath, codeHealthPercentage, calculatedCodeQuality, rating);
 
                                 var emailService = new EmailService(email);
-                                emailService.SendEmail();
+                                emailService.SendReportEmail();
                             });
                     }
                 }
