@@ -99,6 +99,11 @@ namespace SonarWatcher
 
             bool badCode = lastMeasure.CodeQualityValue < 4 && preLastMeasure.CodeQualityValue < 4 && !preLastMeasure.HasNoValue();
 
+            if (badCode || noChangeOnLastWeeks)
+            {
+
+            }
+
             html = html.Replace("{{projectInactivityWarning}}", noChangeOnLastWeeks ? "display: normal;" : "display: none;");
             html = html.Replace("{{projectCodeQualityWarning}}", badCode ? "display: normal;" : "display: none;");
 
@@ -117,9 +122,9 @@ namespace SonarWatcher
 
         private void AddDestinationEmails()
         {
-            string defaultReciver = ConfigurationManager.AppSettings["defaultReceiver"];
+            string defaultReceiver = ConfigurationManager.AppSettings["defaultReceiver"];
             if (emailInfo.DestinataryMails.Count == 0)
-                emailInfo.AddDestinataryMail(defaultReciver);
+                emailInfo.AddDestinataryMail(defaultReceiver);
 
             foreach (var email in emailInfo.DestinataryMails)
             {
