@@ -33,14 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -64,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeQualityMeasurementService.cs" />
+    <Compile Include="Entity\CodeQualityMeasurement.cs" />
+    <Compile Include="Entity\CodeQualityMeasurementDto.cs" />
     <Compile Include="Entity\ProjectRating.cs" />
     <Compile Include="Entity\Rating.cs" />
     <Compile Include="Entity\SonarJsons\SonarRatingJson.cs" />
@@ -89,10 +84,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\arr_diag_down.png" />
+    <Content Include="Resources\arr_diag_up.png" />
+    <Content Include="Resources\arr_down.png" />
+    <Content Include="Resources\arr_right.png" />
+    <Content Include="Resources\arr_up.png" />
     <Content Include="Resources\email.html" />
     <Content Include="Resources\error.jpg" />
     <Content Include="Resources\logoCwi.jpg" />
     <Content Include="Resources\logoSonar.jpg" />
+    <None Include="Resources\minus-symbol.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

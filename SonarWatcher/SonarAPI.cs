@@ -19,6 +19,15 @@ namespace SonarWatcher
             ConfigureClient();
         }
 
+        private JsonSerializerSettings GetDeserializationSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+        }
+
         private List<MetricSequence> FormatMetrics(SonarMetricsJson projectMetrics)
         {
             List<MetricSequence> metrics = InitializeMetricsList(projectMetrics.cols);
@@ -76,9 +85,9 @@ namespace SonarWatcher
             return await GetProjectMetricsFormatedAsync(projectKey, "severityMetricsApiTemplateURL");
         }
 
-        public async Task<List<MetricSequence>> GetComplexityAndLineNumberProjectMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetComplexityAndLineNumberAndCodeQualityProjectMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsFormatedAsync(projectKey, "complexityAndLineNumberMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "complexityAndLineNumberAndCodeQualityMetricsApiTemplateURL");
         }
 
         private async Task<List<MetricSequence>> GetProjectMetricsFormatedAsync(string projectKey, string valor)
@@ -106,7 +115,8 @@ namespace SonarWatcher
                 if (response.IsSuccessStatusCode)
                 {
                     var stringResult = await response.Content.ReadAsStringAsync();
-                    sonarMetrics = JsonConvert.DeserializeObject<List<SonarMetricsJson>>(stringResult);
+
+                    sonarMetrics = JsonConvert.DeserializeObject<List<SonarMetricsJson>>(stringResult, GetDeserializationSettings());
                 }
             }
 
@@ -123,7 +133,7 @@ namespace SonarWatcher
                 if (response.IsSuccessStatusCode)
                 {
                     var stringResult = await response.Content.ReadAsStringAsync();
-                    sonarProjects = JsonConvert.DeserializeObject<List<SonarProjectJsons>>(stringResult);
+                    sonarProjects = JsonConvert.DeserializeObject<List<SonarProjectJsons>>(stringResult, GetDeserializationSettings());
                 }
             }
 
@@ -142,7 +152,7 @@ namespace SonarWatcher
                 if (response.IsSuccessStatusCode)
                 {
                     var stringResult = await response.Content.ReadAsStringAsync();
-                    var projectRatingsJson = JsonConvert.DeserializeObject<SonarRatingJson>(stringResult);
+                    var projectRatingsJson = JsonConvert.DeserializeObject<SonarRatingJson>(stringResult, GetDeserializationSettings());
 
                     projectRatings = CreateProjectRatingPopulated(projectRatingsJson);
                 }

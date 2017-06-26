@@ -1,8 +1,11 @@
-﻿public class SonarProjectJsons
+﻿using Newtonsoft.Json;
+
+public class SonarProjectJsons
 {
+    [JsonProperty("id")]
     public string id { get; set; }
-    public string k { get; set; }
-    public string nm { get; set; }
-    public string sc { get; set; }
-    public string qu { get; set; }
+    [JsonProperty("k")]
+    public string Key { get; set; }
+    [JsonProperty("nm")]
+    public string Name { get; set; }
 }

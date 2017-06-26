@@ -40,7 +40,7 @@ namespace SonarWatcher
         {
             ChartArea chartArea = InitializeChartArea();
             Chart chart = InitializeChart(chartName: (string.Format("{0} - {1}", projectName, chartName)));
-            string chartsDirectoryPath = GetOrCreateDirectoryForProjectChatrs(projectName);
+            string chartsDirectoryPath = GetOrCreateDirectoryForProjectCharts(projectName);
 
             chart.ChartAreas.Add(chartArea);
 
@@ -54,7 +54,7 @@ namespace SonarWatcher
             return chartFullPath;
         }
 
-        private string GetOrCreateDirectoryForProjectChatrs(string projectName)
+        private string GetOrCreateDirectoryForProjectCharts(string projectName)
         {
             projectName = projectName.Replace("/", string.Empty).Replace("*", string.Empty);
 
@@ -103,11 +103,12 @@ namespace SonarWatcher
         private List<Series> ConvertMetricToSeries(List<MetricSequence> metricSequences)
         {
             var series = new List<Series>();
-            ushort collorCounter = 0;
+            ushort colorCounter = 0;
+            metricSequences = metricSequences == null ? new List<MetricSequence>() : metricSequences;
 
             foreach (var metricSequence in metricSequences)
             {
-                Series serie = InitializeSerie(metricSequence.Name, collorCounter++);
+                Series serie = InitializeSerie(metricSequence.Name, colorCounter++);
 
                 foreach (var measure in metricSequence.GetMeasures())
                 {
@@ -120,19 +121,19 @@ namespace SonarWatcher
             return series;
         }
 
-        private Series InitializeSerie(string serieName, ushort collorCounter = 0)
+        private Series InitializeSerie(string serieName, ushort colorCounter = 0)
         {
             var serie = new Series();
             serie.Name = serieName;
-            serie.Color = GetNextCollor(collorCounter);
+            serie.Color = GetNextColor(colorCounter);
             serie.ChartType = SeriesChartType.Column;
             serie.IsValueShownAsLabel = true;
             return serie;
         }
 
-        private Color GetNextCollor(ushort collorCounter)
+        private Color GetNextColor(ushort colorCounter)
         {
-            ushort colorIndex = collorCounter > ChartColors.Count ? (ushort)(ChartColors.Count % collorCounter) : collorCounter;
+            ushort colorIndex = colorCounter > ChartColors.Count ? (ushort)(ChartColors.Count % colorCounter) : colorCounter;
             return ChartColors[colorIndex];
         }
 

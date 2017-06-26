@@ -7,6 +7,8 @@ using System.IO;
 using System.Net.Mail;
 using System.Net.Mime;
 using SonarWatcher.Entity;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace SonarWatcher
 {
@@ -64,8 +66,10 @@ namespace SonarWatcher
 
         private string ReplaceEmailTagsWithInfo()
         {
-            var htmlTemplatePath = ConfigurationManager.AppSettings.Get("emailTtemplatePath");
+            var htmlTemplatePath = ConfigurationManager.AppSettings["reportEmailTemplatePath"];
             var sonarLinkToProject = string.Format("{0}/dashboard?id={1}", ConfigurationManager.AppSettings.Get("sonarURL"), emailInfo.ProjectKey);
+            string codeQualityDateTag = "{{codeQualityDate{0}}}",
+                   codeQualityArrowTag = "{{codeQualityArrow{0}}}";
 
             var html = File.ReadAllText(htmlTemplatePath);
             html = html.Replace("{{sonarLogo}}", this.resourcesDictionary[nameof(emailInfo.SonarLogoPath)].ContentId);
@@ -75,6 +79,8 @@ namespace SonarWatcher
             html = html.Replace("{{date}}", DateTime.Now.ToShortDateString());
             html = html.Replace("{{manager}}", emailInfo.Manager);
             html = html.Replace("{{leader}}", emailInfo.Leader);
+            html = html.Replace("{{codeHealthPercentage}}", String.Format("{0:0.0}", emailInfo.CodeHealthPercentage));
+            html = html.Replace("{{codeQualityColor}}", Rating.GetHexaBasedOnRating(emailInfo.CodeHealthPercentage));
             html = html.Replace("{{typeChartPath}}", this.resourcesDictionary[nameof(emailInfo.TypeChartPath)].ContentId);
             html = html.Replace("{{severityChartPath}}", this.resourcesDictionary[nameof(emailInfo.SeverityChartPath)].ContentId);
             html = html.Replace("{{complexityChartPath}}", this.resourcesDictionary[nameof(emailInfo.ComplexityChartPath)].ContentId);
@@ -84,6 +90,28 @@ namespace SonarWatcher
             html = html.Replace("{{securityColor}}", emailInfo.ProjectRating.Security.ToColorHexa());
             html = html.Replace("{{manutenibilityValue}}", emailInfo.ProjectRating.Maintainability.ToClassification());
             html = html.Replace("{{manutenibilityColor}}", emailInfo.ProjectRating.Maintainability.ToColorHexa());
+
+            var lastMeasure = emailInfo.CalculatedCodeQuality.First();
+            var preLastMeasure = emailInfo.CalculatedCodeQuality.ElementAtOrDefault(1);
+
+            bool noChangeOnLastWeeks = (!lastMeasure.LineAmountHasChanged && !preLastMeasure.LineAmountHasChanged && !preLastMeasure.HasNoValue())
+                || lastMeasure.MeasurementDate < DateTime.Now.AddDays(-14);
+
+            bool badCode = lastMeasure.CodeQualityValue < 4 && preLastMeasure.CodeQualityValue < 4 && !preLastMeasure.HasNoValue();
+
+            html = html.Replace("{{projectInactivityWarning}}", noChangeOnLastWeeks ? "display: normal;" : "display: none;");
+            html = html.Replace("{{projectCodeQualityWarning}}", badCode ? "display: normal;" : "display: none;");
+
+            for (int i = 0; i < emailInfo.CalculatedCodeQuality.Count; i++)
+            {
+                var actualMeasure = emailInfo.CalculatedCodeQuality.ElementAt(i);
+                var formattedDate = actualMeasure.HasNoValue() ? "-" : actualMeasure.MeasurementDate.ToString("dd/MM/yyyy");
+                var arrowContentId = this.SetArrowBasedOnRating(actualMeasure, mail);
+
+                html = html.Replace(String.Format(codeQualityDateTag, i), formattedDate);
+                html = html.Replace(String.Format(codeQualityArrowTag, i), arrowContentId);
+            }
+
             return html;
         }
 
@@ -119,6 +147,54 @@ namespace SonarWatcher
             LinkedResource inline = new LinkedResource(resourcePath, MediaTypeNames.Image.Jpeg);
             inline.ContentId = Guid.NewGuid().ToString();
             this.resourcesDictionary.Add(keyName, inline);
+        }
+
+        private string SetArrowBasedOnRating(CodeQualityMeasurementDto rating, MailMessage mailMessage)
+        {
+            string filePath;
+            string key;
+            string basePath = Directory.GetParent(Path.GetDirectoryName(Application.ExecutablePath)).Parent.FullName + "\\Images\\";
+            var value = rating.CodeQualityValue;
+
+            if (rating.ShowDashInsteadOfValue)
+            {
+                key = "dash.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 2)
+            {
+                key = "arrDown.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 4)
+            {
+                key = "arrDiagDown.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 6)
+            {
+                key = "arrRight.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 8)
+            {
+                key = "arrDiagUp.png";
+                filePath = basePath + key;
+            }
+            else
+            {
+                key = "arrUp.png";
+                filePath = basePath + key;
+            }
+
+
+            if (!resourcesDictionary.ContainsKey(key))
+            {
+                CreateLinkedResourceAndAddToDictionary(key, filePath);
+                AddAttachment(filePath, mail);
+            }
+
+            return resourcesDictionary[key].ContentId;
         }
     }
 }

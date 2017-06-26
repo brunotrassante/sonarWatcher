@@ -61,11 +61,62 @@ namespace SonarWatcher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string logoCWI {
+        internal static System.Drawing.Bitmap arr_diag_down {
             get {
-                return ResourceManager.GetString("logoCWI", resourceCulture);
+                object obj = ResourceManager.GetObject("arr_diag_down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arr_diag_up {
+            get {
+                object obj = ResourceManager.GetObject("arr_diag_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arr_down {
+            get {
+                object obj = ResourceManager.GetObject("arr_down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arr_right {
+            get {
+                object obj = ResourceManager.GetObject("arr_right", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arr_up {
+            get {
+                object obj = ResourceManager.GetObject("arr_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minus_symbol {
+            get {
+                object obj = ResourceManager.GetObject("minus_symbol", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

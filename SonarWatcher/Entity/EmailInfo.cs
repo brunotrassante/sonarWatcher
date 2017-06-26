@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SonarWatcher.Entity
 {
@@ -18,11 +14,13 @@ namespace SonarWatcher.Entity
         public string TypeChartPath { get; set; }
         public string SeverityChartPath { get; set; }
         public List<string> DestinataryMails { get; private set; }
+        public List<CodeQualityMeasurementDto> CalculatedCodeQuality { get; private set; } 
         public ProjectRating ProjectRating { get; private set; }
         public string CompanyLogoPath { get; set; }
         public string SonarLogoPath { get; set; }
+        public double CodeHealthPercentage { get; set; }
 
-        public EmailInfo(string project, string projectKey, string manager, string leader, IEnumerable<string> destinataryMails, string complexityChartPath, string typeChartPath, string severityChartPath, ProjectRating projectRating)
+        public EmailInfo(string project, string projectKey, string manager, string leader, IEnumerable<string> destinataryMails, string complexityChartPath, string typeChartPath, string severityChartPath, double codeHealthPercentage, List<CodeQualityMeasurementDto> calculatedCodeQuality, ProjectRating projectRating)
         {
             this.Project = project;
             this.ProjectKey = projectKey;
@@ -36,6 +34,8 @@ namespace SonarWatcher.Entity
             this.ProjectRating = projectRating;
             this.CompanyLogoPath = ConfigurationManager.AppSettings["companyLogo"];
             this.SonarLogoPath = ConfigurationManager.AppSettings["sonarLogo"];
+            this.CodeHealthPercentage = codeHealthPercentage;
+            this.CalculatedCodeQuality = calculatedCodeQuality;
         }
 
         public void AddDestinataryMail(string email)

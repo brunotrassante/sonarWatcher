@@ -11,5 +11,5 @@
 
 GO
 CREATE NONCLUSTERED INDEX [IX_Projectperson]
-    ON [dbo].[Projectperson]([ProjectId] ASC);
+    ON [dbo].[ProjectPerson]([ProjectId] ASC);
 
