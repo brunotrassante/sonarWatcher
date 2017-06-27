@@ -14,7 +14,7 @@ namespace SonarWatcher.Repository
                         FROM [Person] 
                         Join [ProjectPersonRole] ON [ProjectPersonRole].PersonId = [Person].Id
                         Join [Project] on [Project].Id = [ProjectPersonRole].ProjectId
-                        WHERE[Project].SonarKey = @SonarKey";
+                        WHERE[Project].SonarKey = @SonarKey AND Person.Active = 1 AND ProjectPersonRole.Active = 1";
 
             using (var conn = new SqlConnection(connectionString))
             {
@@ -30,7 +30,7 @@ namespace SonarWatcher.Repository
                         FROM [Person] 
                         Join [ProjectPersonRole] ON [ProjectPersonRole].PersonId = [Person].Id
                         Join [Project] on [Project].Id = [ProjectPersonRole].ProjectId
-                        WHERE[Project].Id = @Id";
+                        WHERE[Project].Id = @Id AND [Person].Active = 1 AND [ProjectPersonRole].Active = 1";
 
             using (var conn = new SqlConnection(connectionString))
             {

@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\email.html" />
+    <Content Include="Resources\emailNoRegistry.html" />
     <Content Include="Resources\error.jpg" />
     <Content Include="Resources\logoCwi.jpg" />
     <Content Include="Resources\logoSonar.jpg" />

@@ -32,11 +32,11 @@ namespace SonarWatcher
                         var complexityProjectMetricsTask = sonarAPI.GetComplexityAndLineNumberAndCodeQualityProjectMetricsAsync(project.Key);
                         var ratingTask = sonarAPI.GetProjectRatings(project.Key);
 
-                        Task.WhenAll(issuesMetricsTask, severityProjectMetricsTask, complexityProjectMetricsTask, ratingTask).ContinueWith(
+                        AllTasksFromAllProjects.Add(Task.WhenAll(issuesMetricsTask, severityProjectMetricsTask, complexityProjectMetricsTask, ratingTask).ContinueWith(
                             tasksResults =>
                             {
-                            //TODO: Tratamento de erros
-                            string typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.Name, "Ocorrências por Tipo");
+                                //TODO: Tratamento de erros
+                                string typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.Name, "Ocorrências por Tipo");
                                 string severityChartPath = chart.CreateChartsGrouped(severityProjectMetricsTask.Result, project.Name, "Ocorrências por Severidade");
                                 string complexityChartPath = chart.CreateChartsGrouped(complexityProjectMetricsTask.Result, project.Name, "Número de linhas x Complexidade");
                                 ProjectRating rating = ratingTask.Result;
@@ -52,7 +52,7 @@ namespace SonarWatcher
 
                                 var emailService = new EmailService(email);
                                 emailService.SendReportEmail();
-                            });
+                            }));
                     }
                 }
                 // Aguarda todas as atividades assincronas terminarem para seguir

@@ -2,6 +2,7 @@
     [ProjectId] INT NOT NULL,
     [PersonId]  INT NOT NULL,
     [RoleId]    INT NULL,
+    [Active] INT NULL, 
     CONSTRAINT [FK_ProjectPerson_Person] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Person] ([Id]),
     CONSTRAINT [FK_ProjectPerson_Project] FOREIGN KEY ([ProjectId]) REFERENCES [dbo].[Project] ([Id])
 );
