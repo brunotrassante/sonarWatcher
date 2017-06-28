@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SonarWatcher.Entity;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,15 @@ namespace SonarWatcher
             return new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                Error = HandleDeserializationError
             };
+        }
+
+        private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
+        {
+            var currentError = errorArgs.ErrorContext.Error.Message;
+            errorArgs.ErrorContext.Handled = true;
         }
 
         private List<MetricSequence> FormatMetrics(SonarMetricsJson projectMetrics)

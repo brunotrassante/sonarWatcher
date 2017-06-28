@@ -21,6 +21,7 @@ namespace SonarWatcher
             if (sonarProjects.Exception == null && sonarProjects.Result != null)
             {
                 var projects = sonarProjects.Result;
+                projects = projects.Where((value, index) => index == 16).ToList();
 
                 foreach (var project in projects)
                 {
