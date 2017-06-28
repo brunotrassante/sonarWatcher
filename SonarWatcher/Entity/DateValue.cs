@@ -23,6 +23,6 @@ public class DateValue
 
     public bool HasNoValue()
     {
-        return this.Date == DateTime.MinValue && this.Value == 0;
+        return this.Date == DateTime.MinValue && Double.Equals(this.Value, 0d);
     }
 }

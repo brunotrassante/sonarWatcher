@@ -3,7 +3,7 @@
 public class SonarProjectJsons
 {
     [JsonProperty("id")]
-    public string id { get; set; }
+    public string Id { get; set; }
     [JsonProperty("k")]
     public string Key { get; set; }
     [JsonProperty("nm")]

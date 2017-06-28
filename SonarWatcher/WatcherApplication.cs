@@ -21,7 +21,6 @@ namespace SonarWatcher
             if (sonarProjects.Exception == null && sonarProjects.Result != null)
             {
                 var projects = sonarProjects.Result;
-                //projects = projects.Where((value, index) => index == 23).ToList();
 
                 foreach (var project in projects)
                 {
@@ -35,7 +34,6 @@ namespace SonarWatcher
                         AllTasksFromAllProjects.Add(Task.WhenAll(issuesMetricsTask, severityProjectMetricsTask, complexityProjectMetricsTask, ratingTask).ContinueWith(
                             tasksResults =>
                             {
-                                //TODO: Tratamento de erros
                                 string typeChartPath = chart.CreateChartsGrouped(issuesMetricsTask.Result, project.Name, "Ocorrências por Tipo");
                                 string severityChartPath = chart.CreateChartsGrouped(severityProjectMetricsTask.Result, project.Name, "Ocorrências por Severidade");
                                 string complexityChartPath = chart.CreateChartsGrouped(complexityProjectMetricsTask.Result, project.Name, "Número de linhas x Complexidade");

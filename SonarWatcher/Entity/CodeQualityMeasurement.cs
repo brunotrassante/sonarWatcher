@@ -25,7 +25,7 @@ namespace SonarWatcher.Entity
 
         public bool HasNoValue()
         {
-            return this.SqaleIndex == 0 && this.Lines == 0 && this.MeasurementDate == DateTime.MinValue;
+            return Double.Equals(this.SqaleIndex, 0d) && Double.Equals(this.Lines, 0d) && this.MeasurementDate == DateTime.MinValue;
         }
     }
 }

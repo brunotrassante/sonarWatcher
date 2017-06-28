@@ -13,9 +13,9 @@ namespace SonarWatcher
 {
     public class EmailService
     {
-        private Dictionary<string, LinkedResource> resourcesDictionary;
-        MailMessage mail;
-        EmailInfo emailInfo;
+        private readonly Dictionary<string, LinkedResource> resourcesDictionary;
+        readonly MailMessage mail;
+        readonly EmailInfo emailInfo;
 
         public EmailService(EmailInfo emailInfo)
         {
@@ -137,7 +137,7 @@ namespace SonarWatcher
             {
                 var actualMeasure = emailInfo.CalculatedCodeQuality.ElementAt(i);
                 var formattedDate = actualMeasure.HasNoValue() ? "-" : actualMeasure.MeasurementDate.ToString("dd/MM/yyyy");
-                var arrowContentId = this.SetArrowBasedOnRating(actualMeasure, mail);
+                var arrowContentId = this.SetArrowBasedOnRating(actualMeasure);
 
                 html = html.Replace(String.Format(codeQualityDateTag, i), formattedDate);
                 html = html.Replace(String.Format(codeQualityArrowTag, i), arrowContentId);
@@ -191,7 +191,7 @@ namespace SonarWatcher
             this.resourcesDictionary.Add(keyName, inline);
         }
 
-        private string SetArrowBasedOnRating(CodeQualityMeasurementDto rating, MailMessage mailMessage)
+        private string SetArrowBasedOnRating(CodeQualityMeasurementDto rating)
         {
             string filePath;
             string key;

@@ -24,8 +24,8 @@ namespace SonarWatcher
 
         public List<CodeQualityMeasurementDto> CalculateCodeQuality(List<CodeQualityMeasurement> metrics)
         {
-            CodeQualityMeasurement lastMeasurement = null,
-                        oneBeforeTheLastMeasurement = null,
+            CodeQualityMeasurement lastMeasurement,
+                        oneBeforeTheLastMeasurement,
                         twoBeforeTheLastMeasurement = null,
                         threeBeforeTheLastMeasurement = null,
                         fourBeforeTheLastMeasurement = null;

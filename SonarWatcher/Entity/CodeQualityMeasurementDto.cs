@@ -36,7 +36,7 @@ namespace SonarWatcher.Entity
 
         public bool HasNoValue()
         {
-            return this.CodeQualityValue == 0 && this.MeasurementDate == DateTime.MinValue;
+            return Double.Equals(this.CodeQualityValue, 0d) && this.MeasurementDate == DateTime.MinValue;
         }
     }
 }
