@@ -21,8 +21,7 @@ namespace SonarWatcher
             if (sonarProjects.Exception == null && sonarProjects.Result != null)
             {
                 var projects = sonarProjects.Result;
-                projects = projects.Where((value, index) => index == 16).ToList();
-
+              
                 foreach (var project in projects)
                 {
                     if (!string.IsNullOrEmpty(project.Key))
@@ -43,7 +42,7 @@ namespace SonarWatcher
                                 var projectMembers = personRepository.FindAllByProjectKey(project.Key);
                                 string managerName = projectMembers.SingleOrDefault(m => m.Role == Role.Manager)?.Name ?? "Não cadastrado";
                                 string headName = projectMembers.SingleOrDefault(m => m.Role == Role.Head)?.Name ?? "Não cadastrado";
-                                double codeHealthPercentage = this.CalculateCodeHealth(complexityProjectMetricsTask.Result, issuesMetricsTask.Result);
+                                double codeHealthPercentage = this.CalculateCodeHealth(complexityProjectMetricsTask.Result, issuesMetricsTask.Result,project.Key);
                                 List<CodeQualityMeasurement> joinedMeasurements = codeQualityMeasurementService.JoinMeasurements(complexityProjectMetricsTask.Result);
                                 List<CodeQualityMeasurementDto> calculatedCodeQuality = codeQualityMeasurementService.CalculateCodeQuality(joinedMeasurements);
                                 IEnumerable<string> projecMemberEmails = projectMembers.Select(m => m.Email);
@@ -79,7 +78,7 @@ namespace SonarWatcher
             }
         }
 
-        private double CalculateCodeHealth(List<MetricSequence> complexityMetrics, List<MetricSequence> issuesMetrics)
+        private double CalculateCodeHealth(List<MetricSequence> complexityMetrics, List<MetricSequence> issuesMetrics, string key)
         {
             var numOfLinesMetric = complexityMetrics.Find(m => m.Name.Equals("Linhas"));
             var lines = numOfLinesMetric.GetMeasures().Last().Value;

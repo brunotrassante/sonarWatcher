@@ -80,7 +80,7 @@ namespace SonarWatcher.Entity
             }
         }
 
-        public static string GetHexaBasedOnRating(double rating)
+        public static string GetHexaBasedOnRating(double rating, EmailInfo email)
         {
             if (rating < 2) return Awful;
             if (rating < 4) return Bad;

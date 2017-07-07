@@ -118,7 +118,6 @@ namespace SonarWatcher
 
             if (latestMeasure == null && measures.Count > measuresTaken)
             {
-
                 while (dayDifference < 60)
                 {
                     dayDifference++;

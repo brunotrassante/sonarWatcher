@@ -12,7 +12,7 @@ namespace SonarWatcher.Entity
 
         public MetricSequence(string metricName)
         {
-            switch(metricName)
+            switch (metricName)
             {
                 case "ncloc":
                     this.Name = "Linhas";
@@ -40,8 +40,11 @@ namespace SonarWatcher.Entity
 
         public void AddMeasure(DateValue dateValue)
         {
-            if (!AlreadyHasAMeasureInTheSameWeek(dateValue))
+            if (AlreadyHasAMeasureInTheSameWeek(dateValue))
+                Measures[Measures.Count - 1] = dateValue;
+            else
                 Measures.Add(dateValue);
+
 
             if (Measures.Count > 16)
                 Measures.RemoveAt(0);

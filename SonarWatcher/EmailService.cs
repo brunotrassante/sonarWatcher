@@ -106,7 +106,7 @@ namespace SonarWatcher
 
             html = html.Replace("{{sonarLink}}", sonarLinkToProject);
             html = html.Replace("{{codeHealthPercentage}}", String.Format("{0:0.0}", emailInfo.CodeHealthPercentage));
-            html = html.Replace("{{codeQualityColor}}", Rating.GetHexaBasedOnRating(emailInfo.CodeHealthPercentage));
+            html = html.Replace("{{codeQualityColor}}", Rating.GetHexaBasedOnRating(emailInfo.CodeHealthPercentage, emailInfo));
             html = html.Replace("{{typeChartPath}}", this.resourcesDictionary[nameof(emailInfo.TypeChartPath)].ContentId);
             html = html.Replace("{{severityChartPath}}", this.resourcesDictionary[nameof(emailInfo.SeverityChartPath)].ContentId);
             html = html.Replace("{{complexityChartPath}}", this.resourcesDictionary[nameof(emailInfo.ComplexityChartPath)].ContentId);

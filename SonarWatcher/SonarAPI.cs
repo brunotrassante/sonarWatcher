@@ -41,6 +41,10 @@ namespace SonarWatcher
 
             foreach (var projectMeasureInCertainDay in projectMetrics.Cells)
             {
+                // Gambi para resolver o caso onde alguns campos voltam nulo do sonar e o mapeamento automático os ignora, criando discrepância entre o número de valores esperado e o retornado
+                if (projectMeasureInCertainDay.V.Count != metrics.Count)
+                    continue;
+
                 for (int i = 0; i < projectMeasureInCertainDay.V.Count; i++)
                 {
                     metrics[i].AddMeasure(new DateValue(projectMeasureInCertainDay.D, projectMeasureInCertainDay.V[i]));
