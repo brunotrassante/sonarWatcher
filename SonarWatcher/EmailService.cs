@@ -27,7 +27,7 @@ namespace SonarWatcher
         public void SendReportEmail()
         {
             AddLinkedResourcesAttachments();
-            string html = File.ReadAllText(ConfigurationManager.AppSettings.Get("reportEmailTemplatePath"));
+            string html = File.ReadAllText(ConfigurationManager.AppSettings.Get("emailTemplatePath"));
             html = ReplaceAllEmailTagsWithInfo(html);
 
             CreateAndSendMailForTemplate(html);
@@ -130,8 +130,8 @@ namespace SonarWatcher
                 this.AddDefaultDestinationEmail();
             }
 
-            html = html.Replace("{{projectInactivityWarning}}", noChangeOnLastWeeks ? "display: normal;" : "display: none;");
-            html = html.Replace("{{projectCodeQualityWarning}}", badCode ? "display: normal;" : "display: none;");
+            html = html.Replace("{{projectInactivityWarning}}", noChangeOnLastWeeks ? string.Empty : "display: none;visibility: hidden;");
+            html = html.Replace("{{projectCodeQualityWarning}}", badCode ? string.Empty : "display: none;visibility: hidden;");
 
             for (int i = 0; i < emailInfo.CalculatedCodeQuality.Count; i++)
             {

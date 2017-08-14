@@ -26,7 +26,7 @@ namespace SonarWatcher
                 {
                     if (!string.IsNullOrEmpty(project.Key))
                     {
-                        var issuesMetricsTask = sonarAPI.GetProjectThreeIsuesMetricsAsync(project.Key);
+                        var issuesMetricsTask = sonarAPI.GetProjectThreeIssuesMetricsAsync(project.Key);
                         var severityProjectMetricsTask = sonarAPI.GetSeverityProjectMetricsAsync(project.Key);
                         var complexityProjectMetricsTask = sonarAPI.GetComplexityAndLineNumberAndCodeQualityProjectMetricsAsync(project.Key);
                         var ratingTask = sonarAPI.GetProjectRatings(project.Key);
@@ -78,7 +78,7 @@ namespace SonarWatcher
             }
         }
 
-        private double CalculateCodeHealth(List<MetricSequence> complexityMetrics, List<MetricSequence> issuesMetrics, string key)
+        private double CalculateCodeHealth(List<MetricSequence> complexityMetrics, List<MetricSequence> issuesMetrics)
         {
             var numOfLinesMetric = complexityMetrics.Find(m => m.Name.Equals("Linhas"));
             var lines = numOfLinesMetric.GetMeasures().Last().Value;

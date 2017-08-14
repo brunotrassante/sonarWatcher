@@ -86,9 +86,9 @@ namespace SonarWatcher
             return await GetProjectMetricsFormatedAsync(projectKey, "metricsApiTemplateURL");
         }
 
-        public async Task<List<MetricSequence>> GetProjectThreeIsuesMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetProjectThreeIssuesMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsFormatedAsync(projectKey, "threeIsuesMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "threeIssuesMetricsApiTemplateURL");
         }
 
         public async Task<List<MetricSequence>> GetSeverityProjectMetricsAsync(string projectKey)
