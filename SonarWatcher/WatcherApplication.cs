@@ -20,7 +20,7 @@ namespace SonarWatcher
             if (sonarProjects.Exception == null && sonarProjects.Result != null)
             {
                 var projects = sonarProjects.Result;
-              
+
                 foreach (var project in projects)
                 {
                     if (!string.IsNullOrEmpty(project.Key))
@@ -42,9 +42,9 @@ namespace SonarWatcher
                                 string managerName = projectMembers.SingleOrDefault(m => m.Role == Role.Manager)?.Name ?? "Não cadastrado";
                                 string headName = projectMembers.SingleOrDefault(m => m.Role == Role.Head)?.Name ?? "Não cadastrado";
                                 IEnumerable<string> projecMemberEmails = projectMembers.Select(m => m.Email);
-                                EmailInfo email = new EmailInfo(project.Name, project.Key, managerName, headName, projecMemberEmails, complexityChartPath, typeChartPath, severityChartPath, codeHealthPercentage, calculatedCodeQuality, rating);
                                 double codeHealthPercentage = new CodeHealthService(complexityProjectMetricsTask.Result, issuesMetricsTask.Result).Calculate();
                                 List<CodeQualityMeasurement> calculatedCodeQuality = new CodeQualityService(complexityProjectMetricsTask.Result).Calculate();
+                                EmailInfo email = new EmailInfo(project.Name, project.Key, managerName, headName, projecMemberEmails, complexityChartPath, typeChartPath, severityChartPath, codeHealthPercentage, calculatedCodeQuality, rating);
 
                                 var emailService = new EmailService(email);
                                 emailService.SendReportEmail();
