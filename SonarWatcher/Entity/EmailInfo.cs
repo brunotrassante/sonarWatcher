@@ -14,13 +14,13 @@ namespace SonarWatcher.Entity
         public string TypeChartPath { get; set; }
         public string SeverityChartPath { get; set; }
         public List<string> DestinataryMails { get; private set; }
-        public List<CodeQualityMeasurementDto> CalculatedCodeQuality { get; private set; } 
+        public List<CodeQualityMeasurement> CalculatedCodeQuality { get; private set; } 
         public ProjectRating ProjectRating { get; private set; }
         public string CompanyLogoPath { get; set; }
         public string SonarLogoPath { get; set; }
         public double CodeHealthPercentage { get; set; }
 
-        public EmailInfo(string project, string projectKey, string manager, string leader, IEnumerable<string> destinataryMails, string complexityChartPath, string typeChartPath, string severityChartPath, double codeHealthPercentage, List<CodeQualityMeasurementDto> calculatedCodeQuality, ProjectRating projectRating)
+        public EmailInfo(string project, string projectKey, string manager, string leader, IEnumerable<string> destinataryMails, string complexityChartPath, string typeChartPath, string severityChartPath, double codeHealthPercentage, List<CodeQualityMeasurement> calculatedCodeQuality, ProjectRating projectRating)
         {
             this.Project = project;
             this.ProjectKey = projectKey;

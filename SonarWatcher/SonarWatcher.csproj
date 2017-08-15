@@ -71,12 +71,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeQualityMeasurementService.cs" />
+    <Compile Include="CodeHealthService.cs" />
+    <Compile Include="CodeQualityService.cs" />
     <Compile Include="Entity\CodeQualityMeasurement.cs" />
     <Compile Include="Entity\CodeQualityMeasurementDto.cs" />
     <Compile Include="Entity\ProjectRating.cs" />
     <Compile Include="Entity\Rating.cs" />
     <Compile Include="Entity\SonarJsons\SonarRatingJson.cs" />
+    <Compile Include="IMeasurementService.cs" />
     <Compile Include="WatcherApplication.cs" />
     <Compile Include="EmailService.cs" />
     <Compile Include="Entity\DateValue.cs" />
@@ -129,6 +131,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

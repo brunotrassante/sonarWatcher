@@ -191,7 +191,7 @@ namespace SonarWatcher
             this.resourcesDictionary.Add(keyName, inline);
         }
 
-        private string SetArrowBasedOnRating(CodeQualityMeasurementDto rating)
+        private string SetArrowBasedOnRating(CodeQualityMeasurement rating)
         {
             string filePath;
             string key;

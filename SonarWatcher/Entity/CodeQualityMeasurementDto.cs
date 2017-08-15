@@ -4,39 +4,27 @@ namespace SonarWatcher.Entity
 {
     public class CodeQualityMeasurementDto
     {
-        public double CodeQualityValue { get; set; }
-        public DateTime MeasurementDate { get; set; }
-        public bool LineAmountHasChanged { get; set; }
-        public bool LostLines { get; set; }
-        public bool ShowDashInsteadOfValue { get; set; }
-
-        public CodeQualityMeasurementDto(double sqaleIndex, DateTime measurementDate, bool lineAmountHasChanged)
-        {
-            this.CodeQualityValue = sqaleIndex;
-            this.MeasurementDate = measurementDate;
-            this.LineAmountHasChanged = lineAmountHasChanged;
-            this.ShowDashInsteadOfValue = !lineAmountHasChanged;
-        }
-
-        public CodeQualityMeasurementDto(DateTime measurementDate)
-        {
-            this.CodeQualityValue = 0;
-            this.MeasurementDate = measurementDate;
-            this.LineAmountHasChanged = false;
-            this.ShowDashInsteadOfValue = true;
-        }
+        public double SqaleIndex { get; private set; }
+        public double Lines { get; private set; }
+        public DateTime MeasurementDate { get; private set; }
 
         public CodeQualityMeasurementDto()
         {
-            this.CodeQualityValue = 0;
+            this.SqaleIndex = 0;
+            this.Lines = 0;
             this.MeasurementDate = DateTime.MinValue;
-            this.LineAmountHasChanged = true;
-            this.ShowDashInsteadOfValue = true;
+        }
+
+        public CodeQualityMeasurementDto(DateValue sqaleIndexMeasurement, DateValue linesMeasurement)
+        {
+            this.SqaleIndex = sqaleIndexMeasurement.Value;
+            this.Lines = linesMeasurement.Value;
+            this.MeasurementDate = sqaleIndexMeasurement.Date;
         }
 
         public bool HasNoValue()
         {
-            return Double.Equals(this.CodeQualityValue, 0d) && this.MeasurementDate == DateTime.MinValue;
+            return Double.Equals(this.SqaleIndex, 0d) && Double.Equals(this.Lines, 0d) && this.MeasurementDate == DateTime.MinValue;
         }
     }
 }
