@@ -12,7 +12,7 @@ namespace SonarWatcher.Repository
             string connectionString = ConfigurationManager.ConnectionStrings["sonarWatcherConnection"].ConnectionString;
             var sql = @"SELECT Id, [Name] 
                         FROM [dbo].[Project]
-                        WHERE Project.SonarKey is NULL AND Project.Active";
+                        WHERE Project.SonarKey is NULL AND Project.Active = 1";
 
             using (var conn = new SqlConnection(connectionString))
             {

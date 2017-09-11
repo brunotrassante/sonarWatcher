@@ -43,6 +43,7 @@ namespace SonarWatcher
             mail.AlternateViews.Add(avHtml);
 
             SmtpClient client = new SmtpClient("cwirelay", 25);
+            client.Timeout = 2 * 60 * 1000;
             client.Send(mail);
         }
 
