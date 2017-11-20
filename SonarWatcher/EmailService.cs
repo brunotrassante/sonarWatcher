@@ -196,7 +196,7 @@ namespace SonarWatcher
         {
             string filePath;
             string key;
-            string basePath = Directory.GetParent(Path.GetDirectoryName(Application.ExecutablePath)).Parent.FullName + "\\Images\\";
+            string basePath = Path.GetDirectoryName(Application.ExecutablePath) +  "\\Images\\";
             var value = rating.CodeQualityValue;
 
             if (rating.ShowDashInsteadOfValue)
