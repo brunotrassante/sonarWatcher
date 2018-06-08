@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SonarWatcher.Entity
 {
-    class MetricSequence
+    public class MetricSequence
     {
         public string Name { get; private set; }
 
@@ -12,7 +12,24 @@ namespace SonarWatcher.Entity
 
         public MetricSequence(string metricName)
         {
-            this.Name = metricName;
+            switch (metricName)
+            {
+                case "ncloc":
+                    this.Name = "Linhas";
+                    break;
+                case "complexity":
+                    this.Name = "Complexidade";
+                    break;
+                case "sqale_index":
+                    this.Name = "Débito Técnico (min)";
+                    break;
+                case "vulnerabilities":
+                    this.Name = "Vulnerabilidades";
+                    break;
+                default:
+                    this.Name = metricName;
+                    break;
+            }
             Measures = new List<DateValue>();
         }
 
@@ -23,8 +40,11 @@ namespace SonarWatcher.Entity
 
         public void AddMeasure(DateValue dateValue)
         {
-            if (!AlreadyHasAMeasureInTheSameWeek(dateValue))
+            if (AlreadyHasAMeasureInTheSameWeek(dateValue))
+                Measures[Measures.Count - 1] = dateValue;
+            else
                 Measures.Add(dateValue);
+
 
             if (Measures.Count > 16)
                 Measures.RemoveAt(0);

@@ -1,12 +1,13 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
     <table width="1200" align="center" cellspacing="0" style="font-size: 20px;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
         <tr>
-            <td align="left"> <img src="cid:{{sonarLogo}}" /></td>
-            <td align="right" colspan="2"><img src="cid:{{companyLogo}}" /></td>
+            <td align="left"> <img alt="Sonar Logo" src="cid:{{sonarLogo}}" /></td>
+            <td align="right" colspan="2"><img alt="Company Logo" src="cid:{{companyLogo}}" /></td>
         </tr>
         <tr style="font-size:20px; color: ghostwhite; background-color:#2d2d2d">
             <td style="padding:10px;"> <em> {{project}}</em> </td>
@@ -15,7 +16,63 @@
         <tr style="font-size: 15px;color:#2d2d2d">
             <td align="center" style="padding:10px">Gerente: <strong>{{manager}}</strong></td>
             <td align="center">Responsável Técnico: <strong>{{leader}}</strong></td>
-            <td>(Para mais infos acesse: <a href="{{sonarLink}}"><strong>sonar.cwi)</strong></a></td>
+            <td>(Para mais infos acesse: <a href="{{sonarLink}}"><strong>sonar.cwi</strong></a>)</td>
+        </tr>
+        <tr>
+            <td style="padding-top:10px;padding-left:10px;color:#2d2d2d"><em>Métricas de Qualidade</em></td>
+        </tr>
+        <tr>
+            <td colspan="3" height="2px" style="background-color: #2d2d2d;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" height="30px" align="left" style="padding: 15px;">
+                <strong><em style="font-size: 15px; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Qualidade do Código Gerado</em></strong>
+                <table align="left" cellspacing="20" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+                    <tr>
+                        <td align="center" style="padding-top: 25px;">
+                            <img alt="imagem qualidade codigo 3" width="50" height="50" src="cid:{codeQualityArrow3}"></img>
+                            <br />
+                            <b style="font-size: 15px; color: #666;">{codeQualityDate3}</b>
+                        </td>
+                        <td align="center" style="padding-top: 25px;">
+                            <img alt="imagem qualidade codigo 2" width="50" height="50" src="cid:{codeQualityArrow2}"></img>
+                            <br />
+                            <b style="font-size: 15px; color: #666;">{codeQualityDate2}</b>
+                        </td>
+                        <td align="center" style="padding-top: 25px;">
+                            <img alt="imagem qualidade codigo 1" width="50" height="50" src="cid:{codeQualityArrow1}"></img>
+                            <br />
+                            <b style="font-size: 15px; color: #666;">{codeQualityDate1}</b>
+                        </td>
+                        <td align="center" style="padding-left: 40px;">
+                            <img alt="imagem qualidade codigo" width="70" height="70" src="cid:{codeQualityArrow0}"></img>
+                            <br />
+                            <b style="font-size: 15px;">{codeQualityDate0}</b>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <td colspan="1" align="center" style="padding-top: 5px;">
+                <strong><em style="font-size: 15px; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Saúde Geral do Código</em></strong>
+                <table align="center" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+                    <tr>
+                        <td align="center">
+                            <strong style="font-size: 50px;"><span style="color:{{codeQualityColor}};">{{codeHealthPercentage}}</span>/10</strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="font-size: 20px; padding: 15px; {{projectInactivityWarning}}" colspan="3">
+                <strong><em style="color:#FF851B;">Este projeto está sem atividade por pelo menos duas semanas. Ele já está finalizado?</em></strong>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="font-size: 20px; padding: 15px; {{projectCodeQualityWarning}}" colspan="3">
+                <strong><em style="color:#EC644B;">Cuidado! O índice de qualidade do código gerado baixou nas últimas semanas.</em></strong>
+            </td>
         </tr>
         <tr>
             <td style="padding-top:10px;padding-left:10px;color:#2d2d2d"><em>Classificações</em></td>
@@ -47,7 +104,7 @@
             <td colspan="3" height="2px" style="background-color: #2d2d2d;"></td>
         </tr>
         <tr>
-            <td colspan="3"><img src="cid:{{complexityChartPath}}" /></td>
+            <td colspan="3"><img alt="Gráfico de Complexidade" src="cid:{{complexityChartPath}}" /></td>
         </tr>
 
         <tr>
@@ -57,7 +114,7 @@
             <td colspan="3" height="2px" style="background-color: #2d2d2d;"></td>
         </tr>
         <tr>
-            <td colspan="3"><img src="cid:{{typeChartPath}}" /></td>
+            <td colspan="3"><img alt="Gráfico de Tipos" src="cid:{{typeChartPath}}" /></td>
         </tr>
 
 
@@ -68,7 +125,7 @@
             <td colspan="3" height="2px" style="background-color: #2d2d2d;"></td>
         </tr>
         <tr>
-            <td colspan="3"><img src="cid:{{severityChartPath}}" /></td>
+            <td colspan="3"><img alt="Gráfico de Gravidade" src="cid:{{severityChartPath}}" /></td>
         </tr>
     </table>
 </body>

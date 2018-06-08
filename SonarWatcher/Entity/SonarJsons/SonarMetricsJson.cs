@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 public class Col
 {
-    public string metric { get; set; }
+    public string Metric { get; set; }
 }
 
 public class Cell
 {
-    public string d { get; set; }
-    public List<double> v { get; set; }
+    public string D { get; set; }
+    public List<double> V { get; set; }
 }
 
 public class SonarMetricsJson
 {
-    public List<Col> cols { get; set; }
-    public List<Cell> cells { get; set; }
+    public List<Col> Cols { get; set; }
+    public List<Cell> Cells { get; set; }
 }

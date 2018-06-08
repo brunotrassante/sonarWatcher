@@ -59,14 +59,5 @@ namespace SonarWatcher.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string logoCWI {
-            get {
-                return ResourceManager.GetString("logoCWI", resourceCulture);
-            }
-        }
     }
 }

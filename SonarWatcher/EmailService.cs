@@ -7,14 +7,15 @@ using System.IO;
 using System.Net.Mail;
 using System.Net.Mime;
 using SonarWatcher.Entity;
+using System.Windows.Forms;
 
 namespace SonarWatcher
 {
     public class EmailService
     {
-        private Dictionary<string, LinkedResource> resourcesDictionary;
-        MailMessage mail;
-        EmailInfo emailInfo;
+        private readonly Dictionary<string, LinkedResource> resourcesDictionary;
+        readonly MailMessage mail;
+        readonly EmailInfo emailInfo;
 
         public EmailService(EmailInfo emailInfo)
         {
@@ -23,19 +24,53 @@ namespace SonarWatcher
             this.emailInfo = emailInfo;
         }
 
-        public void SendEmail()
+        public void SendReportEmail()
+        {
+            AddLinkedResourcesAttachments();
+            string html = File.ReadAllText(ConfigurationManager.AppSettings.Get("emailTemplatePath"));
+            html = ReplaceAllEmailTagsWithInfo(html);
+
+            CreateAndSendMailForTemplate(html);
+        }
+
+        private void CreateAndSendMailForTemplate(string html)
         {
             ConfigureMailGeneralSettings();
-            AddLinkedResourcesAttachments();
             AddDestinationEmails();
 
-            string html = ReplaceEmailTagsWithInfo();
             AlternateView avHtml = AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html);
             AddLinkedResource(avHtml);
             mail.AlternateViews.Add(avHtml);
 
             SmtpClient client = new SmtpClient("cwirelay", 25);
+            client.Timeout = 2 * 60 * 1000;
             client.Send(mail);
+        }
+
+
+        public void SendNotRegisteredEmail()
+        {
+            AddBasicLogoLinkedResourcesAttachments();
+            AddDefaultDestinationEmail();
+
+            string html = File.ReadAllText(ConfigurationManager.AppSettings.Get("noRegistryEmailTemplatePath"));
+            html = ReplaceBasicEmailTags(html);
+
+            CreateAndSendMailForTemplate(html);
+        }
+
+        private void AddBasicLogoLinkedResourcesAttachments()
+        {
+            CreateLinkedResourceAndAddToDictionary(nameof(emailInfo.CompanyLogoPath), emailInfo.CompanyLogoPath);
+            AddAttachment(emailInfo.CompanyLogoPath, mail);
+            CreateLinkedResourceAndAddToDictionary(nameof(emailInfo.SonarLogoPath), emailInfo.SonarLogoPath);
+            AddAttachment(emailInfo.SonarLogoPath, mail);
+        }
+
+        private void AddDefaultDestinationEmail()
+        {
+            string defaultReceiver = ConfigurationManager.AppSettings["defaultReceiver"];
+            mail.To.Add(defaultReceiver);
         }
 
         private void ConfigureMailGeneralSettings()
@@ -62,19 +97,17 @@ namespace SonarWatcher
             AddAttachment(emailInfo.SonarLogoPath, mail);
         }
 
-        private string ReplaceEmailTagsWithInfo()
+        private string ReplaceAllEmailTagsWithInfo(string html)
         {
-            var htmlTemplatePath = ConfigurationManager.AppSettings.Get("emailTtemplatePath");
-            var sonarLinkToProject = string.Format("{0}/dashboard?id={1}", ConfigurationManager.AppSettings.Get("sonarURL"), emailInfo.ProjectKey);
+            html = ReplaceBasicEmailTags(html);
 
-            var html = File.ReadAllText(htmlTemplatePath);
-            html = html.Replace("{{sonarLogo}}", this.resourcesDictionary[nameof(emailInfo.SonarLogoPath)].ContentId);
-            html = html.Replace("{{companyLogo}}", this.resourcesDictionary[nameof(emailInfo.CompanyLogoPath)].ContentId);
-            html = html.Replace("{{project}}", emailInfo.Project);
+            var sonarLinkToProject = string.Format("{0}/dashboard?id={1}", ConfigurationManager.AppSettings.Get("sonarURL"), emailInfo.ProjectKey);
+            string codeQualityDateTag = "{{codeQualityDate{0}}}",
+                   codeQualityArrowTag = "{{codeQualityArrow{0}}}";
+
             html = html.Replace("{{sonarLink}}", sonarLinkToProject);
-            html = html.Replace("{{date}}", DateTime.Now.ToShortDateString());
-            html = html.Replace("{{manager}}", emailInfo.Manager);
-            html = html.Replace("{{leader}}", emailInfo.Leader);
+            html = html.Replace("{{codeHealthPercentage}}", String.Format("{0:0.0}", emailInfo.CodeHealthPercentage));
+            html = html.Replace("{{codeQualityColor}}", Rating.GetHexaBasedOnRating(emailInfo.CodeHealthPercentage, emailInfo));
             html = html.Replace("{{typeChartPath}}", this.resourcesDictionary[nameof(emailInfo.TypeChartPath)].ContentId);
             html = html.Replace("{{severityChartPath}}", this.resourcesDictionary[nameof(emailInfo.SeverityChartPath)].ContentId);
             html = html.Replace("{{complexityChartPath}}", this.resourcesDictionary[nameof(emailInfo.ComplexityChartPath)].ContentId);
@@ -84,14 +117,52 @@ namespace SonarWatcher
             html = html.Replace("{{securityColor}}", emailInfo.ProjectRating.Security.ToColorHexa());
             html = html.Replace("{{manutenibilityValue}}", emailInfo.ProjectRating.Maintainability.ToClassification());
             html = html.Replace("{{manutenibilityColor}}", emailInfo.ProjectRating.Maintainability.ToColorHexa());
+
+            var lastMeasure = emailInfo.CalculatedCodeQuality.First();
+            var preLastMeasure = emailInfo.CalculatedCodeQuality.ElementAtOrDefault(1);
+
+            bool noChangeOnLastWeeks = (!lastMeasure.LineAmountHasChanged && !preLastMeasure.LineAmountHasChanged && !preLastMeasure.HasNoValue())
+                || lastMeasure.MeasurementDate < DateTime.Now.AddDays(-14);
+
+            bool badCode = lastMeasure.CodeQualityValue < 4 && preLastMeasure.CodeQualityValue < 4 && !preLastMeasure.HasNoValue();
+
+            if (badCode || noChangeOnLastWeeks)
+            {
+                this.AddDefaultDestinationEmail();
+            }
+
+            html = html.Replace("{{projectInactivityWarning}}", noChangeOnLastWeeks ? string.Empty : "display: none;visibility: hidden;");
+            html = html.Replace("{{projectCodeQualityWarning}}", badCode ? string.Empty : "display: none;visibility: hidden;");
+
+            for (int i = 0; i < emailInfo.CalculatedCodeQuality.Count; i++)
+            {
+                var actualMeasure = emailInfo.CalculatedCodeQuality.ElementAt(i);
+                var formattedDate = actualMeasure.HasNoValue() ? "-" : actualMeasure.MeasurementDate.ToString("dd/MM/yyyy");
+                var arrowContentId = this.SetArrowBasedOnRating(actualMeasure);
+
+                html = html.Replace(String.Format(codeQualityDateTag, i), formattedDate);
+                html = html.Replace(String.Format(codeQualityArrowTag, i), arrowContentId);
+            }
+
+            return html;
+        }
+
+        private string ReplaceBasicEmailTags(string html)
+        {
+            html = html.Replace("{{sonarLogo}}", this.resourcesDictionary[nameof(emailInfo.SonarLogoPath)].ContentId);
+            html = html.Replace("{{companyLogo}}", this.resourcesDictionary[nameof(emailInfo.CompanyLogoPath)].ContentId);
+            html = html.Replace("{{project}}", emailInfo.Project);
+            html = html.Replace("{{date}}", DateTime.Now.ToShortDateString());
+            html = html.Replace("{{manager}}", emailInfo.Manager);
+            html = html.Replace("{{leader}}", emailInfo.Leader);
             return html;
         }
 
         private void AddDestinationEmails()
         {
-            string defaultReciver = ConfigurationManager.AppSettings["defaultReceiver"];
+            string defaultReceiver = ConfigurationManager.AppSettings["defaultReceiver"];
             if (emailInfo.DestinataryMails.Count == 0)
-                emailInfo.AddDestinataryMail(defaultReciver);
+                emailInfo.AddDestinataryMail(defaultReceiver);
 
             foreach (var email in emailInfo.DestinataryMails)
             {
@@ -119,6 +190,54 @@ namespace SonarWatcher
             LinkedResource inline = new LinkedResource(resourcePath, MediaTypeNames.Image.Jpeg);
             inline.ContentId = Guid.NewGuid().ToString();
             this.resourcesDictionary.Add(keyName, inline);
+        }
+
+        private string SetArrowBasedOnRating(CodeQualityMeasurement rating)
+        {
+            string filePath;
+            string key;
+            string basePath = Path.GetDirectoryName(Application.ExecutablePath) +  "\\Images\\";
+            var value = rating.CodeQualityValue;
+
+            if (rating.ShowDashInsteadOfValue)
+            {
+                key = "dash.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 2)
+            {
+                key = "arrDown.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 4)
+            {
+                key = "arrDiagDown.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 6)
+            {
+                key = "arrRight.png";
+                filePath = basePath + key;
+            }
+            else if (value <= 8)
+            {
+                key = "arrDiagUp.png";
+                filePath = basePath + key;
+            }
+            else
+            {
+                key = "arrUp.png";
+                filePath = basePath + key;
+            }
+
+
+            if (!resourcesDictionary.ContainsKey(key))
+            {
+                CreateLinkedResourceAndAddToDictionary(key, filePath);
+                AddAttachment(filePath, mail);
+            }
+
+            return resourcesDictionary[key].ContentId;
         }
     }
 }

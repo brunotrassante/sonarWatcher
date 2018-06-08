@@ -5,46 +5,46 @@ namespace SonarWatcher.Entity
 {
     public class Rating
     {
-        const string SuperGood = "#2ECC40";
+        const string Excelent = "#2ECC40";
         const string Good = "#01FF70";
-        const string Meddium = "#FF851B";
+        const string Medium = "#FF851B";
         const string Bad = "#EC644B";
-        const string SuperBad = "#D91E18";
+        const string Awful = "#D91E18";
 
-        private ushort value { get; set; }
+        private ushort Value { get; set; }
 
         public Rating(ushort value)
         {
-            this.value = value;
+            this.Value = value;
         }
 
         public ushort ToUshort()
         {
-            return this.value;
+            return this.Value;
         }
 
         public Color ToColor()
         {
-            switch (this.value)
+            switch (this.Value)
             {
                 case 1:
-                    return ColorTranslator.FromHtml(SuperGood);
+                    return ColorTranslator.FromHtml(Excelent);
                 case 2:
                     return ColorTranslator.FromHtml(Good);
                 case 3:
-                    return ColorTranslator.FromHtml(Meddium);
+                    return ColorTranslator.FromHtml(Medium);
                 case 4:
                     return ColorTranslator.FromHtml(Bad);
                 case 5:
-                    return ColorTranslator.FromHtml(SuperBad);
+                    return ColorTranslator.FromHtml(Awful);
                 default:
-                    throw new ArgumentOutOfRangeException("Acceptable rating rage: 1-5");
+                    throw new ArgumentOutOfRangeException("Acceptable rating range: 1-5");
             }
         }
 
         public string ToClassification()
         {
-            switch (this.value)
+            switch (this.Value)
             {
                 case 1:
                     return "A";
@@ -57,28 +57,38 @@ namespace SonarWatcher.Entity
                 case 5:
                     return "E";
                 default:
-                    throw new ArgumentOutOfRangeException("Acceptable rating rage: 1-5");
+                    throw new ArgumentOutOfRangeException("Acceptable rating range: 1-5");
             }
         }
 
         public string ToColorHexa()
         {
-            switch (this.value)
+            switch (this.Value)
             {
                 case 1:
-                    return SuperGood;
+                    return Excelent;
                 case 2:
                     return Good;
                 case 3:    
-                    return Meddium;
+                    return Medium;
                 case 4:    
                     return Bad;
                 case 5:
-                    return SuperBad;
+                    return Awful;
                 default:
-                    throw new ArgumentOutOfRangeException("Acceptable rating rage: 1-5");
+                    throw new ArgumentOutOfRangeException("Acceptable rating range: 1-5");
             }
         }
 
+        public static string GetHexaBasedOnRating(double rating, EmailInfo email)
+        {
+            if (rating < 2) return Awful;
+            if (rating < 4) return Bad;
+            if (rating < 6) return Medium;
+            if (rating < 8) return Good;
+            if (rating <= 11) return Excelent;
+
+            throw new ArgumentOutOfRangeException("Acceptable rating range: 0 to 11");
+        }
     }
 }

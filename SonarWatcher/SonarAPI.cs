@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SonarWatcher.Entity;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -19,15 +19,35 @@ namespace SonarWatcher
             ConfigureClient();
         }
 
+        private JsonSerializerSettings GetDeserializationSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                Error = HandleDeserializationError
+            };
+        }
+
+        private void HandleDeserializationError(object sender, ErrorEventArgs errorArgs)
+        {
+            var currentError = errorArgs.ErrorContext.Error.Message;
+            errorArgs.ErrorContext.Handled = true;
+        }
+
         private List<MetricSequence> FormatMetrics(SonarMetricsJson projectMetrics)
         {
-            List<MetricSequence> metrics = InitializeMetricsList(projectMetrics.cols);
+            List<MetricSequence> metrics = InitializeMetricsList(projectMetrics.Cols);
 
-            foreach (var projectMeasureInCertainDay in projectMetrics.cells)
+            foreach (var projectMeasureInCertainDay in projectMetrics.Cells)
             {
-                for (int i = 0; i < projectMeasureInCertainDay.v.Count(); i++)
+                // Gambi para resolver o caso onde alguns campos voltam nulo do sonar e o mapeamento automático os ignora, criando discrepância entre o número de valores esperado e o retornado
+                if (projectMeasureInCertainDay.V.Count != metrics.Count)
+                    continue;
+
+                for (int i = 0; i < projectMeasureInCertainDay.V.Count; i++)
                 {
-                    metrics[i].AddMeasure(new DateValue(projectMeasureInCertainDay.d, projectMeasureInCertainDay.v[i]));
+                    metrics[i].AddMeasure(new DateValue(projectMeasureInCertainDay.D, projectMeasureInCertainDay.V[i]));
                 }
             }
 
@@ -40,7 +60,7 @@ namespace SonarWatcher
 
             foreach (var coluna in colunas)
             {
-                metrics.Add(new MetricSequence(coluna.metric));
+                metrics.Add(new MetricSequence(coluna.Metric));
             }
 
             return metrics;
@@ -66,9 +86,9 @@ namespace SonarWatcher
             return await GetProjectMetricsFormatedAsync(projectKey, "metricsApiTemplateURL");
         }
 
-        public async Task<List<MetricSequence>> GetProjectThreeIsuesMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetProjectThreeIssuesMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsFormatedAsync(projectKey, "threeIsuesMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "threeIssuesMetricsApiTemplateURL");
         }
 
         public async Task<List<MetricSequence>> GetSeverityProjectMetricsAsync(string projectKey)
@@ -76,9 +96,9 @@ namespace SonarWatcher
             return await GetProjectMetricsFormatedAsync(projectKey, "severityMetricsApiTemplateURL");
         }
 
-        public async Task<List<MetricSequence>> GetComplexityAndLineNumberProjectMetricsAsync(string projectKey)
+        public async Task<List<MetricSequence>> GetComplexityAndLineNumberAndCodeQualityProjectMetricsAsync(string projectKey)
         {
-            return await GetProjectMetricsFormatedAsync(projectKey, "complexityAndLineNumberMetricsApiTemplateURL");
+            return await GetProjectMetricsFormatedAsync(projectKey, "complexityAndLineNumberAndCodeQualityMetricsApiTemplateURL");
         }
 
         private async Task<List<MetricSequence>> GetProjectMetricsFormatedAsync(string projectKey, string valor)
@@ -106,7 +126,8 @@ namespace SonarWatcher
                 if (response.IsSuccessStatusCode)
                 {
                     var stringResult = await response.Content.ReadAsStringAsync();
-                    sonarMetrics = JsonConvert.DeserializeObject<List<SonarMetricsJson>>(stringResult);
+
+                    sonarMetrics = JsonConvert.DeserializeObject<List<SonarMetricsJson>>(stringResult, GetDeserializationSettings());
                 }
             }
 
@@ -123,7 +144,7 @@ namespace SonarWatcher
                 if (response.IsSuccessStatusCode)
                 {
                     var stringResult = await response.Content.ReadAsStringAsync();
-                    sonarProjects = JsonConvert.DeserializeObject<List<SonarProjectJsons>>(stringResult);
+                    sonarProjects = JsonConvert.DeserializeObject<List<SonarProjectJsons>>(stringResult, GetDeserializationSettings());
                 }
             }
 
@@ -142,7 +163,7 @@ namespace SonarWatcher
                 if (response.IsSuccessStatusCode)
                 {
                     var stringResult = await response.Content.ReadAsStringAsync();
-                    var projectRatingsJson = JsonConvert.DeserializeObject<SonarRatingJson>(stringResult);
+                    var projectRatingsJson = JsonConvert.DeserializeObject<SonarRatingJson>(stringResult, GetDeserializationSettings());
 
                     projectRatings = CreateProjectRatingPopulated(projectRatingsJson);
                 }
@@ -157,18 +178,18 @@ namespace SonarWatcher
             ushort securityRating = 0;
             ushort manutenibilityRating = 0;
 
-            foreach (var measure in projectRatingsJson.component.measures)
+            foreach (var measure in projectRatingsJson.Component.Measures)
             {
-                switch (measure.metric)
+                switch (measure.Metric)
                 {
                     case "security_rating":
-                        securityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        securityRating = (ushort)decimal.Parse(measure.Value, CultureInfo.InvariantCulture);
                         break;
                     case "sqale_rating":
-                        manutenibilityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        manutenibilityRating = (ushort)decimal.Parse(measure.Value, CultureInfo.InvariantCulture);
                         break;
                     case "reliability_rating":
-                        reabilityRating = (ushort)decimal.Parse(measure.value, CultureInfo.InvariantCulture);
+                        reabilityRating = (ushort)decimal.Parse(measure.Value, CultureInfo.InvariantCulture);
                         break;
                     default:
                         break;

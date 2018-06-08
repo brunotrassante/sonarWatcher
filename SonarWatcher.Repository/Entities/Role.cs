@@ -1,6 +1,6 @@
 ﻿namespace SonarWatcher.Repository
 {
-    public enum RoleEnum
+    public enum Role
     {
         Manager = 1,
         Head = 2,
